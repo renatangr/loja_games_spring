@@ -10,7 +10,7 @@ import com.generation.lojagames.model.Produto;
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long>{
 	
-	List<Produto> findAllByTituloContainingIgnoreCase(String titulo);
+	List<Produto> findAllByNomeContainingIgnoreCase(String nome);
 	
 	List<Produto> findAllByPrecoLessThan(Double preco); // Seleciona valores menores do que o critério da consulta
 	
