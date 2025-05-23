@@ -1,5 +1,7 @@
 package com.generation.lojagames.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +33,15 @@ public class UsuarioService {
 	public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
 
 		if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
-			return Optional.empty();
-
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
+		
+		if(Period.between(usuario.getDataNascimento(), LocalDate.now()).getYears() < 18)
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário precisa ser maios de idade.", null);
+		
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
-
+		
 		return Optional.of(usuarioRepository.save(usuario));
-	
+		
 	}
 
 	public Optional<Usuario> atualizarUsuario(Usuario usuario) {
@@ -47,7 +52,10 @@ public class UsuarioService {
 
 			if ( (buscaUsuario.isPresent()) && ( buscaUsuario.get().getId() != usuario.getId()))
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
-
+			
+			if(Period.between(usuario.getDataNascimento(), LocalDate.now()).getYears() < 18)
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário precisa ser maios de idade.", null);
+			
 			usuario.setSenha(criptografarSenha(usuario.getSenha()));
 
 			return Optional.ofNullable(usuarioRepository.save(usuario));
